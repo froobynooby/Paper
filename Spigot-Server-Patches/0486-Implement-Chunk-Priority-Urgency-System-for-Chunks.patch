@@ -90,7 +90,7 @@ index b12e43ed13a1a9d7d418831b8988c30a242cb5c4..dcaf9f8574a9c913b64ba3a1d8b02220
          return new BlockPosition(this.d(), 0, this.e());
      }
 diff --git a/src/main/java/net/minecraft/server/ChunkMapDistance.java b/src/main/java/net/minecraft/server/ChunkMapDistance.java
-index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..d0bdffadefa6ed67bd30d833891256cc39a8f7f0 100644
+index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95caf835262 100644
 --- a/src/main/java/net/minecraft/server/ChunkMapDistance.java
 +++ b/src/main/java/net/minecraft/server/ChunkMapDistance.java
 @@ -23,6 +23,7 @@ import java.util.concurrent.Executor;
@@ -376,7 +376,7 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..d0bdffadefa6ed67bd30d833891256cc
 +            long elapsed = MinecraftServer.currentTick - startTick;
 +            ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(i);
 +            PlayerChunk updatingChunk = chunkMap.getUpdatingChunk(i);
-+            if ((updatingChunk != null && updatingChunk.isFullChunkReady()) || !isChunkInRange(i) || getChunkPriority(chunkPos) > 0) { // Copied from above
++            if ((updatingChunk != null && updatingChunk.isFullChunkReady()) || (!isChunkInRange(i) && elapsed > 0) || getChunkPriority(chunkPos) > 0) { // Copied from above
 +                // no longer needed
 +                task.accept(1);
 +                return;
@@ -1158,7 +1158,7 @@ index b877fd6b5d47069bba0ee70a6d4aa50f24770dd7..cab29e756cd0f04c8c97e29ee2affaa3
      }
  
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index ffd4170bc410bdc88fabd2109e51fcf5eb7be718..a39e5d060120fabef8f18d41faabe2808847db00 100644
+index 6f5fd83414fd51f7674cf69066b5d5d18327e2bc..5d631dbb426f0e7a2e39c4636cfd5e0c1246c248 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -198,8 +198,8 @@ public abstract class PlayerList {
