@@ -90,7 +90,7 @@ index b12e43ed13a1a9d7d418831b8988c30a242cb5c4..dcaf9f8574a9c913b64ba3a1d8b02220
          return new BlockPosition(this.d(), 0, this.e());
      }
 diff --git a/src/main/java/net/minecraft/server/ChunkMapDistance.java b/src/main/java/net/minecraft/server/ChunkMapDistance.java
-index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..25a48aec6db6a658cea713727a60348a53c351f7 100644
+index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..e77c9810eaa6955e59cc81838ee7373fe47c98da 100644
 --- a/src/main/java/net/minecraft/server/ChunkMapDistance.java
 +++ b/src/main/java/net/minecraft/server/ChunkMapDistance.java
 @@ -23,6 +23,7 @@ import java.util.concurrent.Executor;
@@ -307,13 +307,22 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..25a48aec6db6a658cea713727a60348a
      public <T> boolean addTicketAtLevel(TicketType<T> ticketType, ChunkCoordIntPair chunkcoordintpair, int level, T identifier) {
          return this.addTicket(chunkcoordintpair.pair(), new Ticket<>(ticketType, level, identifier));
          // CraftBukkit end
+@@ -352,7 +491,7 @@ public abstract class ChunkMapDistance {
+ 
+     class c extends ChunkMapDistance.b {
+ 
+-        private int e = 0;
++        private int e = 0; private int getViewDistance() { return e; } private void setViewDistance(int value) { this.e = value; } // Paper - OBFHELPER
+         private final Long2IntMap f = Long2IntMaps.synchronize(new Long2IntOpenHashMap());
+         private final LongSet g = new LongOpenHashSet();
+ 
 @@ -368,41 +507,68 @@ public abstract class ChunkMapDistance {
  
          public void a(int i) {
              ObjectIterator objectiterator = this.a.long2ByteEntrySet().iterator();
 +            // Paper start - set the view distance before scheduling chunk loads/unloads
-+            int lastViewDistance = this.e;
-+            this.e = i;
++            int lastViewDistance = getViewDistance();
++            setViewDistance(i);
 +            // Paper end
  
              while (objectiterator.hasNext()) {
@@ -326,7 +335,7 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..25a48aec6db6a658cea713727a60348a
              }
  
 -            this.e = i;
-+            //this.e = i; // Paper - moved up
++            //this.e = i; // Paper - view distance is set further up
          }
  
          private void a(long i, int j, boolean flag, boolean flag1) {
