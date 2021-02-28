@@ -90,7 +90,7 @@ index b12e43ed13a1a9d7d418831b8988c30a242cb5c4..dcaf9f8574a9c913b64ba3a1d8b02220
          return new BlockPosition(this.d(), 0, this.e());
      }
 diff --git a/src/main/java/net/minecraft/server/ChunkMapDistance.java b/src/main/java/net/minecraft/server/ChunkMapDistance.java
-index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95caf835262 100644
+index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..25a48aec6db6a658cea713727a60348a53c351f7 100644
 --- a/src/main/java/net/minecraft/server/ChunkMapDistance.java
 +++ b/src/main/java/net/minecraft/server/ChunkMapDistance.java
 @@ -23,6 +23,7 @@ import java.util.concurrent.Executor;
@@ -307,7 +307,27 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95c
      public <T> boolean addTicketAtLevel(TicketType<T> ticketType, ChunkCoordIntPair chunkcoordintpair, int level, T identifier) {
          return this.addTicket(chunkcoordintpair.pair(), new Ticket<>(ticketType, level, identifier));
          // CraftBukkit end
-@@ -382,27 +521,50 @@ public abstract class ChunkMapDistance {
+@@ -368,41 +507,68 @@ public abstract class ChunkMapDistance {
+ 
+         public void a(int i) {
+             ObjectIterator objectiterator = this.a.long2ByteEntrySet().iterator();
++            // Paper start - set the view distance before scheduling chunk loads/unloads
++            int lastViewDistance = this.e;
++            this.e = i;
++            // Paper end
+ 
+             while (objectiterator.hasNext()) {
+                 Long2ByteMap.Entry it_unimi_dsi_fastutil_longs_long2bytemap_entry = (Long2ByteMap.Entry) objectiterator.next(); // Paper - decompile fix
+                 byte b0 = it_unimi_dsi_fastutil_longs_long2bytemap_entry.getByteValue();
+                 long j = it_unimi_dsi_fastutil_longs_long2bytemap_entry.getLongKey();
+ 
+-                this.a(j, b0, this.c(b0), b0 <= i - 2);
++                this.a(j, b0, b0 <= lastViewDistance - 2, this.c(b0)); // Paper
+             }
+ 
+-            this.e = i;
++            //this.e = i; // Paper - moved up
+         }
  
          private void a(long i, int j, boolean flag, boolean flag1) {
              if (flag != flag1) {
@@ -364,7 +384,7 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95c
                          });
                      }, i, true));
                  }
-@@ -410,6 +572,101 @@ public abstract class ChunkMapDistance {
+@@ -410,6 +576,101 @@ public abstract class ChunkMapDistance {
  
          }
  
@@ -376,7 +396,7 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95c
 +            long elapsed = MinecraftServer.currentTick - startTick;
 +            ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(i);
 +            PlayerChunk updatingChunk = chunkMap.getUpdatingChunk(i);
-+            if ((updatingChunk != null && updatingChunk.isFullChunkReady()) || (!isChunkInRange(i) && elapsed > 0) || getChunkPriority(chunkPos) > 0) { // Copied from above
++            if ((updatingChunk != null && updatingChunk.isFullChunkReady()) || !isChunkInRange(i) || getChunkPriority(chunkPos) > 0) { // Copied from above
 +                // no longer needed
 +                task.accept(1);
 +                return;
@@ -466,7 +486,7 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95c
          @Override
          public void a() {
              super.a();
-@@ -441,6 +698,7 @@ public abstract class ChunkMapDistance {
+@@ -441,6 +702,7 @@ public abstract class ChunkMapDistance {
  
          }
  
@@ -474,7 +494,7 @@ index 6ebc4a4b5c90d8592a017e7b29dec5ca00827432..cbfe5c0edb6917db604605b04a23f95c
          private boolean c(int i) {
              return i <= this.e - 2;
          }
-@@ -457,6 +715,7 @@ public abstract class ChunkMapDistance {
+@@ -457,6 +719,7 @@ public abstract class ChunkMapDistance {
              this.a.defaultReturnValue((byte) (i + 2));
          }
  
