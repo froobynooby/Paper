@@ -236,7 +236,7 @@ index ab08336043d4f558434ed1f38d25cc555ace1ac0..a892521db1197369bf6363bd2f5da24b
              });
              this.b = Lists.newArrayList();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a95c52035177cb86c7e3a580d5c26a5dd20a17e2..81cff54c93bc04d19e3cc0f5307799c62d139ab2 100644
+index 6977255868dbc0a96973095fff2eb935ecf4f4fc..6d843bb69b1848ae77098dc3f45d85f405fc24cd 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1675,9 +1675,9 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
@@ -428,6 +428,19 @@ index e872e5c9157ca499491042040f0cc0f14f7d2946..2efca1fe92b2e93dcbf5337eea8855b1
                  return i == 0;
              });
          } finally {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/BehaviorFindPosition.java b/src/main/java/net/minecraft/world/entity/ai/behavior/BehaviorFindPosition.java
+index a04d4dc665f34687b5d744fea56bc46263f27235..1828ea10391e922d3ab3f5027a853af51000ca65 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/BehaviorFindPosition.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/BehaviorFindPosition.java
+@@ -94,7 +94,7 @@ public class BehaviorFindPosition extends Behavior<EntityCreature> {
+                 villageplace.a(this.b.c(), (blockposition1) -> {
+                     return blockposition1.equals(blockposition);
+                 }, blockposition, 1);
+-                entitycreature.getBehaviorController().setMemory(this.c, (Object) GlobalPos.create(worldserver.getDimensionKey(), blockposition));
++                entitycreature.getBehaviorController().setMemory(this.c, GlobalPos.create(worldserver.getDimensionKey(), blockposition)); // Paper - decompile fix
+                 this.e.ifPresent((obyte) -> {
+                     worldserver.broadcastEntityEffect(entitycreature, obyte);
+                 });
 diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/VillagePlace.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/VillagePlace.java
 index fe5dcce3873ca2724ac9d416d6f5d3c65d0fdafe..aa1d948e6aebef25f0f4c4c07f5131d2e8387e59 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/village/poi/VillagePlace.java
